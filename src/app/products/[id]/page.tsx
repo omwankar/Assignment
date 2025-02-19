@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { use, useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react";
@@ -21,24 +21,23 @@ interface Product {
 }
 
 interface ProductDetailPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>; // `params` is a Promise in Next.js 14+
 }
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+  const resolvedParams = use(params); // Unwrap the params Promise
   const [product, setProduct] = useState<Product | null>(null);
   const [quantity, setQuantity] = useState(1);
   const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
-    if (!params.id) return;
-    
-    const productId = decodeURIComponent(params.id); // Ensure proper ID decoding
+    if (!resolvedParams?.id) return;
 
-    fetch(`https://dummyjson.com/products/${productId}`)
+    fetch(`https://dummyjson.com/products/${resolvedParams.id}`)
       .then((res) => res.json())
       .then((data) => setProduct(data))
       .catch((error) => console.error("Error fetching product:", error));
-  }, [params.id]);
+  }, [resolvedParams.id]);
 
   if (!product) {
     return <div className="text-center text-lg font-semibold">Loading...</div>;

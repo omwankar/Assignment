@@ -40,7 +40,7 @@ export default function ProductsPage() {
             key={category}
             onClick={() => setSelectedCategory(category)}
             className={`mr-2 px-4 py-2 rounded-full ${
-              selectedCategory === category ? "bg-blue-500 text-white" : "bg-gray-200"
+              selectedCategory === category ? "bg-blue-500 text-white" : "bg-gray-600"
             }`}
           >
             {category}

@@ -17,5 +17,52 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Lato", sans-serif;
+}
+
+.dark {
+  --background: #0a0a0a;
+  --foreground: #ededed;
+}
+
+.bg-primary {
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+.bg-secondary {
+  background-color: hsl(var(--secondary));
+  color: hsl(var(--secondary-foreground));
+}
+
+.bg-accent {
+  background-color: hsl(var(--accent));
+  color: hsl(var(--accent-foreground));
+}
+
+.bg-muted {
+  background-color: hsl(var(--muted));
+  color: hsl(var(--muted-foreground));
+}
+
+.border-default {
+  border-color: hsl(var(--border));
+}
+
+input, button {
+  border-radius: var(--radius);
+}
+
+@layer components {
+  .btn {
+    @apply px-4 py-2 rounded-lg transition-colors duration-300;
+  }
+
+  .btn-primary {
+    @apply bg-blue-600 text-white shadow-lg hover:bg-blue-700;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-300 text-gray-700 dark:bg-gray-700 dark:text-gray-300 hover:bg-gray-400 dark:hover:bg-gray-600;
+  }
 }

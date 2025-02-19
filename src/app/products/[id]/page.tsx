@@ -1,52 +1,62 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Image from "next/image"
-import Link from "next/link"
-import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react"
-import { useCartStore } from "@/store/cartStore"
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowLeft, Minus, Plus, ShoppingCart } from "lucide-react";
+import { useCartStore } from "@/store/cartStore";
 
 interface Product {
-  id: number
-  title: string
-  description: string
-  price: number
-  discountPercentage: number
-  rating: number
-  stock: number
-  brand: string
-  category: string
-  thumbnail: string
-  images: string[]
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  discountPercentage: number;
+  rating: number;
+  stock: number;
+  brand: string;
+  category: string;
+  thumbnail: string;
+  images: string[];
 }
 
-export default function ProductDetailPage({ params }: { params: { id: string } }) {
-  const [product, setProduct] = useState<Product | null>(null)
-  const [quantity, setQuantity] = useState(1)
-  const addToCart = useCartStore((state) => state.addToCart)
+interface ProductDetailPageProps {
+  params: { id: string };
+}
+
+export default function ProductDetailPage({ params }: ProductDetailPageProps) {
+  const [product, setProduct] = useState<Product | null>(null);
+  const [quantity, setQuantity] = useState(1);
+  const addToCart = useCartStore((state) => state.addToCart);
 
   useEffect(() => {
-    fetch(`https://dummyjson.com/products/${params.id}`)
+    if (!params.id) return;
+    
+    const productId = decodeURIComponent(params.id); // Ensure proper ID decoding
+
+    fetch(`https://dummyjson.com/products/${productId}`)
       .then((res) => res.json())
       .then((data) => setProduct(data))
-  }, [params.id])
+      .catch((error) => console.error("Error fetching product:", error));
+  }, [params.id]);
 
   if (!product) {
-    return <div>Loading...</div>
+    return <div className="text-center text-lg font-semibold">Loading...</div>;
   }
 
   const handleAddToCart = () => {
-    addToCart(product.id, quantity)
-    alert("Added to cart") // You can replace this with a toast notification
-  }
+    addToCart(product.id, quantity);
+    alert("Added to cart"); // Replace with a toast notification if needed
+  };
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <Link href="/products" className="flex items-center mb-4">
+      <Link href="/products" className="flex items-center mb-4 text-blue-500 hover:underline">
         <ArrowLeft className="mr-2" />
         Back to products
       </Link>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Product Image */}
         <div className="relative h-64 md:h-96">
           <Image
             src={product.thumbnail || "/placeholder.svg"}
@@ -56,6 +66,8 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             className="rounded-lg"
           />
         </div>
+
+        {/* Product Details */}
         <div>
           <h1 className="text-2xl font-bold mb-2">{product.title}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
@@ -66,25 +78,34 @@ export default function ProductDetailPage({ params }: { params: { id: string } }
             </span>
             <span className="ml-2 text-sm text-green-500">{product.discountPercentage}% off</span>
           </div>
+
+          {/* Quantity Selection */}
           <div className="flex items-center mb-4">
-            <button onClick={() => setQuantity(Math.max(1, quantity - 1))} className="bg-gray-600 p-2 rounded-full">
+            <button
+              onClick={() => setQuantity(Math.max(1, quantity - 1))}
+              className="bg-gray-600 text-white p-2 rounded-full"
+            >
               <Minus className="w-4 h-4" />
             </button>
-            <span className="mx-4">{quantity}</span>
+            <span className="mx-4 text-lg">{quantity}</span>
             <button
               onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
-              className="bg-gray-600 p-2 rounded-full"
+              className="bg-gray-600 text-white p-2 rounded-full"
             >
               <Plus className="w-4 h-4" />
             </button>
           </div>
-          <button onClick={handleAddToCart} className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center">
+
+          {/* Add to Cart Button */}
+          <button
+            onClick={handleAddToCart}
+            className="bg-blue-500 text-white px-4 py-2 rounded-full flex items-center hover:bg-blue-600 transition"
+          >
             <ShoppingCart className="mr-2" />
             Add to Cart
           </button>
         </div>
       </div>
     </div>
-  )
+  );
 }
-
